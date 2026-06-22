@@ -1,0 +1,8 @@
+{
+  "title": "分解质因数",
+  "description": "给一个数字n，输出将 n 分解质因数之后的结果。",
+  "inputFormat": "第一行，一个整数 n。",
+  "outputFormat": "输出将 n 分解之后的结果，所有的因子用空格分隔，从小到大输出。",
+  "sampleInput": "420",
+  "sampleOutput": "2 2 3 5 7"
+}
