@@ -1,0 +1,8 @@
+{
+  "title": "a到b的质数",
+  "description": "输入 a 和 b，从小到大输出 a 到 b 之间所有的质数。",
+  "inputFormat": "第一行，两个整数 a,b。",
+  "outputFormat": "从小到大输出 a 到 b 之间所有的质数。每行输出一个数。",
+  "sampleInput": "2 10",
+  "sampleOutput": "2\n3\n5\n7"
+}
