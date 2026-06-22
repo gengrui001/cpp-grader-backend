@@ -1,0 +1,8 @@
+{
+  "title": "相等",
+  "description": "给三个数a,b,c，请问他们是否都相等。",
+  "inputFormat": "第一行，三个整数a,b,c。",
+  "outputFormat": "一行，如果他们三个都相等，则输出Yes，否则输出No。",
+  "sampleInput": "2 2 2",
+  "sampleOutput": "Yes"
+}
