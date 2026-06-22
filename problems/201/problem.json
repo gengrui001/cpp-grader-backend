@@ -1,0 +1,8 @@
+{
+  "title": "A + 1 Problem",
+  "description": "读入一个整数 a，请输出 a+1 的值。",
+  "inputFormat": "第一行一个整数 a。",
+  "outputFormat": "输出一行一个整数表示结果。",
+  "sampleInput": "2",
+  "sampleOutput": "3"
+}
