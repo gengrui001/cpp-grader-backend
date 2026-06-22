@@ -1,0 +1,8 @@
+{
+  "title": "数位判断！",
+  "description": "给一个五位数n，判断其中最大的一个数位是不是小于7。（这里指的是各个数位上数字最大的那个，而不是最高位）",
+  "inputFormat": "第一行一个五位数n。",
+  "outputFormat": "一行，一个字符串。如果其中最大的一个数位小于7，输出Yes，否则输出No。",
+  "sampleInput": "76543",
+  "sampleOutput": "No"
+}
