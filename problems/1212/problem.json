@@ -1,0 +1,8 @@
+{
+  "title": "等腰三角形1",
+  "description": "输入 nn，输出如下的由 + 构成的底边长为 2n-12n−1 的等腰三角形。\n\n比如 n=3n=3 的时候，输出\n    +\n  +++\n+++++",
+  "inputFormat": "第一行包含一个整数 n。",
+  "outputFormat": "输出 n 行字符串，表示要求的三角形，注意不要有行末空格。",
+  "sampleInput": "3",
+  "sampleOutput": "  +\n +++\n+++++"
+}
