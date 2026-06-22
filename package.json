@@ -1,0 +1,9 @@
+{
+  "name": "cpp-grader",
+  "version": "1.0.0",
+  "description": "C++ programming homework grader backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
