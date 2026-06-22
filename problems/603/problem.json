@@ -1,0 +1,8 @@
+{
+  "title": "几点钟",
+  "description": "给一个非负整数n，表示现在处于今天的第几分钟。求出现在的时间。",
+  "inputFormat": "第一行一个整数n。",
+  "outputFormat": "一行，输出24小时制的时间，两个:分隔的数字，分别代表时和分。注意，需要含有前导零。",
+  "sampleInput": "1",
+  "sampleOutput": "00:01"
+}
