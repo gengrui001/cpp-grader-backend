@@ -1,0 +1,8 @@
+{
+  "title": "因数个数为4",
+  "description": "输入 a 和 b，输出 a 到 b 之间所有满足因数个数为 4 个的数字。",
+  "inputFormat": "第一行，两个整数 a,b。",
+  "outputFormat": "从小到大输出 a 到 b 之间所有的因数个数为 4 个的数字。每行输出一个数。",
+  "sampleInput": "2 10",
+  "sampleOutput": "6\n8\n10"
+}
