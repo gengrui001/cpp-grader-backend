@@ -1,0 +1,8 @@
+{
+  "title": "次大值",
+  "description": "给三个数a,b,c，输出这三个数中第二大的一个数。（注意考虑相等的情况）",
+  "inputFormat": "第一行，三个整数a,b,c。",
+  "outputFormat": "一行，一个数字，表示三个数中第二大的一个数。",
+  "sampleInput": "6 6 5",
+  "sampleOutput": "6"
+}
