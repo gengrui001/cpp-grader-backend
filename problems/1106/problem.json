@@ -1,0 +1,8 @@
+{
+  "title": "一排加号",
+  "description": "输入一个数 n，输出 n 个 + 号排成一排。",
+  "inputFormat": "第一行，一个整数n。",
+  "outputFormat": "一行",
+  "sampleInput": "3",
+  "sampleOutput": "+++"
+}
