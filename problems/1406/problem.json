@@ -1,0 +1,8 @@
+{
+  "title": "平均数统计",
+  "description": "给定n个整数a1, a2,…,an求出其中有多少个数字大于等于平均数。",
+  "inputFormat": "第一行包含一个整数n。接下来一行，包含n个整数a1, a2, …,an。",
+  "outputFormat": "输出一个数，表示其中有多少个数字大于等于平均数。",
+  "sampleInput": "3\n1 2 4",
+  "sampleOutput": "1"
+}
