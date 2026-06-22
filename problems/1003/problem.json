@@ -1,0 +1,8 @@
+{
+  "title": "单次数位和",
+  "description": "给一个正整数 n，输出它的数位和。",
+  "inputFormat": "一行一个正整数n。",
+  "outputFormat": "一行一个整数，表示数位和",
+  "sampleInput": "68",
+  "sampleOutput": "14"
+}
