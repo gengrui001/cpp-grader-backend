@@ -1,0 +1,8 @@
+{
+  "title": "奇偶判断",
+  "description": "给一个数n，判断是奇数还是偶数。",
+  "inputFormat": "第一行一个整数n。",
+  "outputFormat": "一行，一个字符串。如果nn是奇数，那么输出Odd，否则输出Even。",
+  "sampleInput": "123",
+  "sampleOutput": "Odd"
+}
