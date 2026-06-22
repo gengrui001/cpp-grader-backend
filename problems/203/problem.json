@@ -1,0 +1,8 @@
+{
+  "title": "A + b prodlem",
+  "description": "读入两个整数 a 和 b，请输出它们的和。",
+  "inputFormat": "第一行两个整数 a,b。",
+  "outputFormat": "输出一行一个整数表示它们的和。",
+  "sampleInput": "2 3",
+  "sampleOutput": "5"
+}
