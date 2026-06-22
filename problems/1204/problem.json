@@ -1,0 +1,8 @@
+{
+  "title": "奇偶符号方阵2",
+  "description": "给两个数a，b，输出a行b列的方阵，要求是，奇数行是+号，偶数行是.号。",
+  "inputFormat": "第一行，两个空格分隔的整数a, b。",
+  "outputFormat": "a行，每行b个符号，奇数行的符号是+号，偶数行的是.号。",
+  "sampleInput": "3 4",
+  "sampleOutput": "++++\n....\n++++"
+}
