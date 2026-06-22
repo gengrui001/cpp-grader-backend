@@ -1,0 +1,8 @@
+{
+  "title": "循环练习5",
+  "description": "给两个数a，b，从小到大输出a和b之间所有数位中包含3的整数（包括a和b）。",
+  "inputFormat": "第一行，两个空格分隔的整数a,b",
+  "outputFormat": "若干行，每行一个整数，按顺序表示从a到b满足要求的数字。",
+  "sampleInput": "1 31",
+  "sampleOutput": "3\n13\n23\n30\n31"
+}
