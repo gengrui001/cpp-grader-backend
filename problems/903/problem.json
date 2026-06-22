@@ -1,0 +1,8 @@
+{
+  "title": "输出a到b",
+  "description": "输入整数 a 和 b，换行从小到大输出 a 到 b 之间的所有数字（包含 a 和 b）。",
+  "inputFormat": "一行两个正整数 a, b。",
+  "outputFormat": "每行一个整数。",
+  "sampleInput": "20 30",
+  "sampleOutput": "20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30"
+}
