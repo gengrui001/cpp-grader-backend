@@ -1,0 +1,8 @@
+{
+  "title": "最大值",
+  "description": "给三个数a,b,c，输出这三个数中最大的一个数。（注意相等的情况，可以查看第一个样例）",
+  "inputFormat": "第一行，三个整数a,b,c。",
+  "outputFormat": "一行，一个数字，表示三个数中最大的一个数。",
+  "sampleInput": "2 3 3",
+  "sampleOutput": "3"
+}
