@@ -1,0 +1,8 @@
+{
+  "title": "从10到1",
+  "description": "从大到小换行输出10到1（包含10和1）。",
+  "inputFormat": "",
+  "outputFormat": "十行，一行一个整数，表示答案。",
+  "sampleInput": "",
+  "sampleOutput": "10\n9\n8\n7\n6\n5\n4\n3\n2\n1"
+}
