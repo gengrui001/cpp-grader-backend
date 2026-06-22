@@ -1,0 +1,8 @@
+{
+  "title": "考试1",
+  "description": "期末考试要考语文、英语、数学3科，如果3门总分在270分以上，就可以得到一朵小红花。输入蜗蜗的语文、英语、数学成绩，请问蜗蜗能不能得到小红花？",
+  "inputFormat": "一行三个整数 chinese,english,math 分别表示蜗蜗的语文、英语、数学成绩。",
+  "outputFormat": "如果蜗蜗能得到小红花，那么输出Yes，否则输出No。",
+  "sampleInput": "90 90 91",
+  "sampleOutput": "Yes"
+}
