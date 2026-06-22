@@ -1,0 +1,8 @@
+{
+  "title": "两位数数位判断！",
+  "description": "给一个两位数 n，判断其十位是不是小于 7",
+  "inputFormat": "第一行一个两位数n。",
+  "outputFormat": "一行，一个字符串。如果十位小于 77，输出Yes，否则输出No。",
+  "sampleInput": "76",
+  "sampleOutput": "No"
+}
