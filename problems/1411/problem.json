@@ -1,0 +1,8 @@
+{
+  "title": "观光缆车",
+  "description": "有n座两两相邻的山，山顶高度分别为a1, a2, ……, an.\n蜗蜗想要在相邻的山顶间修建缆车，他想要知道相邻山峰之间最大的落差是多少。",
+  "inputFormat": "第一行一个整数n。\n接下来一行n个整数，a1, a2, ……, an",
+  "outputFormat": "一个数，表示答案。",
+  "sampleInput": "5\n1 3 6 2 5",
+  "sampleOutput": "4"
+}
