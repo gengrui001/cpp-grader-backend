@@ -1,0 +1,8 @@
+{
+  "title": "排序2",
+  "description": "给定n个正整数a1, a2, ……, an，请将它们从小到大排序，然后输出。\n\n这里请大家用选择排序的方法。",
+  "inputFormat": "第一行一个整数n，表示数字个数。\n\n接下来一行包含n个整数a1, a2, ……, an",
+  "outputFormat": "一行nn个整数，表示排完序之后的结果。",
+  "sampleInput": "5\n3 9 5 3 2",
+  "sampleOutput": "2 3 3 5 9"
+}
