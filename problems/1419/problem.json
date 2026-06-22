@@ -1,0 +1,8 @@
+{
+  "title": "斐波那契数列",
+  "description": "斐波那契数列指的是以下数列: 1, 2, 3, 5, 8, ...，从第三个数开始，每个数是前两个数的和。\n\n现在问你这个数列的第n项是多少。",
+  "inputFormat": "第一行一个整数n。",
+  "outputFormat": "一个数，表示答案。",
+  "sampleInput": "5",
+  "sampleOutput": "5"
+}
