@@ -1,0 +1,1 @@
+{"title":"A + B 问题","description":"给你两个整数A 和 B，请计算出它们的和。","inputFormat":"一行两个整数A 和 B，中间用空格隔开。","outputFormat":"一行一个整数，表示A + B 的值。","sampleInput":"3 5","sampleOutput":"8"}
