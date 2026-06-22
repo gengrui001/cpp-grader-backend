@@ -1,0 +1,8 @@
+{
+  "title": "循环跳跃",
+  "description": "给两个数 a，b，要求从大到小换行输出 a 到 b 之间的数（包含 a，b），要求跳过 3 的倍数，即 3 的倍数不需要输出。",
+  "inputFormat": "第一行，两个空格分隔的整数 a, b。",
+  "outputFormat": "每行一个数",
+  "sampleInput": "6 4",
+  "sampleOutput": "5\n4"
+}
