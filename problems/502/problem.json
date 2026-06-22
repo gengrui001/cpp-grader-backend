@@ -1,0 +1,8 @@
+{
+  "title": "小于小于",
+  "description": "给三个数 a,b,c，请问满不满足 a<b<c（注意这里的 < 指的是数学上的小于）。",
+  "inputFormat": "第一行，三个整数 a,b,c",
+  "outputFormat": "一行，如果满足 a<b<c，则输出 Yes，否则输出 No。",
+  "sampleInput": "2 2 2",
+  "sampleOutput": "No"
+}
