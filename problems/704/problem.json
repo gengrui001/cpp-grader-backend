@@ -1,0 +1,8 @@
+{
+  "title": "数位判断2",
+  "description": "给一个四位数n，判断四个数位中是不是包含7。",
+  "inputFormat": "第一行一个四位数n。",
+  "outputFormat": "一行，一个字符串。如果n包含7，输出Yes，否则输出No。",
+  "sampleInput": "7777",
+  "sampleOutput": "Yes"
+}
