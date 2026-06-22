@@ -1,0 +1,8 @@
+{
+  "title": "找零",
+  "description": "我们有 1 元面值、5 元面值、10 元面值的钞票，请问有多少种找零 n 元的方案？",
+  "inputFormat": "第一行，一个整数 n。",
+  "outputFormat": "一行，一个数字。表示找零的方案数。",
+  "sampleInput": "10",
+  "sampleOutput": "4"
+}
