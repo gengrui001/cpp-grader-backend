@@ -1,0 +1,8 @@
+{
+  "title": "数位求和",
+  "description": "给一个三位数n，请问n的三个数位的和是几。",
+  "inputFormat": "第一行一个三位数n。",
+  "outputFormat": "一行一个数字表示答案。",
+  "sampleInput": "765",
+  "sampleOutput": "18"
+}
