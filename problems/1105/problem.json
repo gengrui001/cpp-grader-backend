@@ -1,0 +1,8 @@
+{
+  "title": "最大值2",
+  "description": "给定 n 个整数，输出它们中的最大值和最小值。",
+  "inputFormat": "第一行，一个正整数n\n接下来一行，n个空格分隔的正整数a1, a2,…,an",
+  "outputFormat": "第一行，两个整数，分别是这些数中的最大值和最小值",
+  "sampleInput": "5\n3 2 7 5 2",
+  "sampleOutput": "7 2"
+}
