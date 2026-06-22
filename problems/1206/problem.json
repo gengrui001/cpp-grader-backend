@@ -1,0 +1,8 @@
+{
+  "title": "加号三角形1",
+  "description": "输入 n，输出 n 行 n 列的由 + 号组成的等腰直角三角形，其中，直角在左下，第 1 行有 1 个 + 号，第 2 行有 2 个 + 号…， 第 n 行有 n 个 + 号。",
+  "inputFormat": "一行，一个整数 n。",
+  "outputFormat": "n 行，为满足题目要求的三角形。",
+  "sampleInput": "3",
+  "sampleOutput": "+\n++\n+++"
+}
