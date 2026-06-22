@@ -1,0 +1,8 @@
+{
+  "title": "最多连续相同数字",
+  "description": "现在给你n个由0,1组成的数组a1, a2, ……, an，请你求出这个数组里连续的0或连续的1最多是多少。",
+  "inputFormat": "第一行一个整数n。\n\n接下来一行n个整数，a1, a2, ……, an",
+  "outputFormat": "一个数，表示答案。",
+  "sampleInput": "6\n1 0 0 1 1 1\n",
+  "sampleOutput": "3"
+}
