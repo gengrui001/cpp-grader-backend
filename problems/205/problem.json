@@ -1,0 +1,8 @@
+{
+  "title": "加减计算器",
+  "description": "读入两个整数 a 和 b，请输出它们的和以及差。",
+  "inputFormat": "第一行两个整数 a,b。",
+  "outputFormat": "输出两行。第一行为一个数字，表示第一个数加第二个数的结果；第二行为一个数字，表示第一个数减第二个数的结果。",
+  "sampleInput": "2 3",
+  "sampleOutput": "5\n-1"
+}
