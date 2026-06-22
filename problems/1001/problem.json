@@ -1,0 +1,8 @@
+{
+  "title": "循环练习1",
+  "description": "给两个数 a,b，从小到大输出 a 和 b 之间能被 5 或 7 整除的整数。",
+  "inputFormat": "第一行，两个空格分隔的整数 a, b。",
+  "outputFormat": "若干行，每行一个整数，按顺序表示从 a 到 b 满足要求的数字。",
+  "sampleInput": "1 30",
+  "sampleOutput": "5\n7\n10\n14\n15\n20\n21\n25\n28\n30"
+}
