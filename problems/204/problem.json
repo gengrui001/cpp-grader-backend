@@ -1,0 +1,8 @@
+{
+  "title": "A  + B problem 2",
+  "description": "读入两个整数 a 和 b，请输出式子和它们的和。",
+  "inputFormat": "第一行两个整数 a,b。",
+  "outputFormat": "输出一行一个式子，表示结果，注意加号左右两边都分别有一个空格，等号左右两边也都分别有一个空格。",
+  "sampleInput": "2 3",
+  "sampleOutput": "2 + 3 = 5"
+}
