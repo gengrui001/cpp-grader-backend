@@ -1,0 +1,8 @@
+{
+  "title": "缺失的数",
+  "description": "现在给你一个整数n，和n−1个互不相同的整数a1, a2, ……, an-1，这些数字是1..n1..n排列的一部分，但缺失了一个数。现在问你缺失的数是多少。",
+  "inputFormat": "第一行一个整数n。\n\n接下来一行n−1个整数，a1, a2, ……, an-1",
+  "outputFormat": "一个数，表示答案。",
+  "sampleInput": "5\n3 5 4 1",
+  "sampleOutput": "2"
+}
