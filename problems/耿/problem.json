@@ -1,0 +1,8 @@
+{
+  "title": "C++零基础 Y1 #|. 加号三角形4",
+  "description": "输入 nn，输出 nn 行 nn 列的由 + 号组成的等腰直角三角形，其中，直角在右上，第 11 行有 nn 个 + 号，第 22 行有 n-1n−1 个 + 号，\\dots…，第 nn 行有 11 个+号，每行的最开始用空格填充。",
+  "inputFormat": "一行，一个整数nn。",
+  "outputFormat": "n 行，为满足题目要求的三角形。",
+  "sampleInput": "3",
+  "sampleOutput": "+++\n ++\n  +"
+}
