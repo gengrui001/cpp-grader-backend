@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C++ 编程小助手</title>
+<link rel="stylesheet" href="style.css?v=1782055428122">
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo"><span class="logo-icon">🧩</span> C++ 编程小助手</div>
+    <nav>
+      <select id="problemSelect" onchange="loadProblem(this.value)">
+        <option value="">-- 选择题目 --</option>
+      </select>
+      <button id="addBtn" onclick="showAddProblem()">+ 添加题目</button>
+    </nav>
+  </header>
+
+  <main>
+    <aside id="problemPanel">
+      <h2 id="problemTitle">欢迎!</h2>
+      <img id="problemCover" style="display:none;width:100%;border-radius:8px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
+      <div id="problemBody">
+        <p>选择一道题目开始编程吧!</p>
+      </div>
+    </aside>
+
+    <section id="editorPanel">
+      <div class="editor-header">
+        <span class="editor-label">✏️ 在这里写你的代码</span>
+        <div class="editor-actions">
+          <button id="submitBtn" onclick="submitCode()" disabled>🚀 提交评测</button>
+        </div>
+      </div>
+      <textarea id="codeEditor" spellcheck="false" placeholder="#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+  // 在这里写你的代码
+  return 0;
+}"></textarea>
+
+      <div id="resultPanel" >
+        <h3>📊 评测结果</h3>
+        <div id="resultSummary"></div>
+        <div id="resultDetails"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="addModal" class="modal-overlay" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>添加新题目</h3>
+      <span class="modal-close" onclick="hideAddProblem()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <label>题目ID (英文, 如: max-number)</label>
+      <input id="fid" class="modal-input" placeholder="例: max-number">
+      <label>标题</label>
+      <input id="ftitle" class="modal-input" placeholder="例: 三个数中最大的">
+      <label>难度</label>
+      <select id="fdiff" class="modal-input">
+        <option>入门</option><option>简单</option><option>中等</option><option>困难</option>
+      </select>
+      <label>题目描述</label>
+      <textarea id="fdesc" class="modal-textarea" rows="3" placeholder="描述题目要求"></textarea>
+      <label>输入格式</label>
+      <textarea id="finfmt" class="modal-textarea" rows="2" placeholder="输入格式说明"></textarea>
+      <label>输出格式</label>
+      <textarea id="foutfmt" class="modal-textarea" rows="2" placeholder="输出格式说明"></textarea>
+      <label>样例输入</label>
+      <textarea id="fsin" class="modal-textarea modal-code" rows="2"></textarea>
+      <label>样例输出</label>
+      <textarea id="fsout" class="modal-textarea modal-code" rows="2"></textarea>
+      <div class="testcases-header">
+        <span>测试数据</span>
+        <button onclick="addTestCase()" class="btn-small">+ 添加测试点</button>
+      </div>
+      <div id="testcases"></div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="hideAddProblem()" class="btn-secondary">取消</button>
+      <button onclick="createProblem()" class="btn-primary">创建题目</button>
+    </div>
+  </div>
+</div>
+<script src="app.js?v=1782055428123"></script>
+</body>
+</html>
