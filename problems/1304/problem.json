@@ -1,0 +1,8 @@
+{
+  "title": "菱形",
+  "description": "输入 n，输出 n 行的由 + 组成的菱形。",
+  "inputFormat": "一行，一个整数 n。",
+  "outputFormat": "n 行，为满足题目要求的菱形。注意不要有行末空格。",
+  "sampleInput": "5",
+  "sampleOutput": "  +\n +++\n+++++\n +++\n  +"
+}
