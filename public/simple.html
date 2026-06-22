@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C++ 学习评测系统</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;background:#0d1117;color:#e6edf3;height:100vh;width:100vw;overflow:hidden}
+
+/* ===== 登录界面 ===== */
+#loginOverlay{position:fixed;top:0;left:0;right:0;bottom:0;background:#0d1117;display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-box{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:36px;width:380px;max-width:90vw}
+.login-box h2{font-size:22px;text-align:center;margin-bottom:8px}
+.login-box p{font-size:12px;color:#8b949e;text-align:center;margin-bottom:16px}
+.login-box label{display:block;font-size:12px;font-weight:600;color:#8b949e;margin:10px 0 4px}
+.login-box input{width:100%;padding:10px;background:#21262d;border:1px solid #30363d;border-radius:6px;color:#e6edf3;font-size:14px;outline:none;font-family:inherit}
+.login-box input:focus{border-color:#58a6ff}
+.login-box .full{width:100%;padding:10px;background:#238636;color:#fff;border:1px solid rgba(240,246,252,0.1);border-radius:6px;cursor:pointer;font-size:14px;font-weight:600;margin-top:14px;font-family:inherit}
+.login-box .link{color:#58a6ff;cursor:pointer;font-size:12px;margin-top:12px;display:inline-block}
+.login-box .msg{color:#f85149;font-size:12px;margin-top:10px;text-align:center;min-height:20px}
+
+/* ===== 主界面（初始 invisible 而非 display:none） ===== */
+#mainApp{position:fixed;top:0;left:0;right:0;bottom:0;visibility:hidden;opacity:0;pointer-events:none;display:flex;flex-direction:column;z-index:1}
+#mainApp.show{visibility:visible;opacity:1;pointer-events:auto;transition:opacity.15s}
+#topbar{background:#161b22;border-bottom:1px solid #30363d;padding:0 16px;display:flex;align-items:center;height:48px;flex-shrink:0;gap:12px}
+#topbar .logo{font-size:18px;font-weight:700;color:#58a6ff}
+#topbar .user-info{font-size:13px;color:#8b949e;margin-left:auto}
+#topbar button{background:none;border:1px solid #30363d;color:#8b949e;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-family:inherit}
+
+/* ===== 布局 ===== */
+#layout{display:flex;flex:1;overflow:hidden}
+#sidebar{width:50%;background:#161b22;border-right:1px solid #30363d;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;font-size:22px;position:relative}
+#main{flex:1;display:flex;flex-direction:column;min-width:0}
+
+/* ===== 分类标签 ===== */
+#tabs{display:flex;border-bottom:1px solid #30363d;flex-shrink:0;flex-wrap:wrap}
+#tabs button{padding:7px 14px;background:none;border:none;border-bottom:2px solid transparent;color:#8b949e;cursor:pointer;font-size:20px;font-weight:500;font-family:inherit;white-space:nowrap}
+#tabs button.active{color:#e6edf3;border-bottom-color:#58a6ff}
+#tabs .add-prob{color:#58a6ff;margin-left:auto}
+
+/* ===== 题目列表 ===== */
+#problemList{flex:1;overflow-y:auto;padding:4px 0}
+.prob-item{padding:8px 14px;cursor:pointer;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:8px;font-size:22px}
+.prob-item:hover{background:#21262d}
+.prob-item.active{background:#1c2333;border-left:3px solid #58a6ff;padding-left:11px}
+.prob-item .num{color:#8b949e;min-width:28px;font-size:20px}
+.prob-item .name{flex:1}
+.prob-item .y-tag{font-size:18px;padding:1px 6px;border-radius:3px;background:rgba(88,166,255,0.15);color:#58a6ff}
+
+/* ===== 题目详情 ===== */
+#probDetail{display:none;padding:12px 14px;border-top:1px solid #30363d;flex-shrink:0;font-size:22px;line-height:1.6}
+#probDetail.show{display:block}
+.detail-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.detail-label{color:#8b949e;margin-top:8px;font-size:20px;border-bottom:1px solid #30363d;padding-bottom:4px}
+.detail-sample{margin:6px 0;padding:8px 10px;background:#161b22;border:1px solid #30363d;border-radius:6px;font-family:Consolas,monospace;font-size:22px;white-space:pre-wrap;line-height:1.5}
+
+/* ===== 编辑器工具栏 ===== */
+#editorToolbar{display:flex;align-items:center;padding:6px 12px;border-bottom:1px solid #30363d;gap:8px;flex-shrink:0;flex-wrap:wrap}
+#editorToolbar .timer{font-family:Consolas,monospace;font-size:14px;color:#8b949e;margin-right:auto}
+#editorToolbar button{padding:5px 14px;border-radius:4px;cursor:pointer;font-size:13px;font-weight:500;font-family:inherit}
+.btn-run{background:#21262d;color:#3fb950;border:1px solid #3fb950}
+.btn-submit{background:#238636;color:#fff;border:1px solid rgba(240,246,252,0.1)}
+.btn-reset{background:#21262d;color:#d29922;border:1px solid #d29922}
+
+/* ===== 代码编辑器 ===== */
+#editorWrap{flex:1;display:flex;overflow:hidden;position:relative}
+#codeEditor{width:100%;height:100%;background:#0d1117;color:#e6edf3;border:none;padding:16px;font-family:Consolas,"Courier New",monospace;font-size:25px;resize:none;outline:none;tab-size:4;line-height:1.5}
+
+/* ===== 评测结果 ===== */
+#resultsPanel{border-top:2px solid #30363d;max-height:260px;overflow-y:auto;padding:10px 14px;display:none;flex-shrink:0;background:#0d1117}
+#resultsPanel.show{display:block}
+.r-item{padding:4px 0;font-size:18px;border-bottom:1px solid #21262d}
+.pass{color:#3fb950}.fail{color:#f85149}
+
+/* ===== 出题表单（全屏覆盖） ===== */
+#probForm{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:100;background:#161b22;overflow-y:auto;padding:16px 20px}
+#probForm.show{display:block}
+.form-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #30363d}
+.form-title span{font-size:20px;font-weight:600}
+.fg{margin-bottom:6px}
+.fg label{display:block;font-size:18px;color:#8b949e;margin-bottom:2px;font-weight:500}
+.fg input,.fg textarea,.fg select{width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none}
+.fg textarea{resize:none;min-height:28px;overflow:hidden}
+.sample-pair{display:flex;gap:6px;margin-bottom:4px;align-items:flex-start}
+.sample-pair textarea{flex:1;min-width:0}
+.form-row{display:flex;gap:8px;margin-bottom:6px}.form-row>*{flex:1}
+.form-btns{display:flex;gap:8px;margin-top:8px}.form-btns button{flex:1;padding:6px;border-radius:4px;cursor:pointer;font-size:20px;font-weight:500;font-family:inherit}
+.btn-add{background:none;border:1px dashed #30363d;color:#58a6ff;border-radius:4px;padding:3px 10px;cursor:pointer;font-size:18px;margin-top:2px;font-family:inherit}
+
+/* ===== 用户管理面板 ===== */
+#userPanel{display:none;position:fixed;top:52px;right:16px;width:400px;background:#21262d;border:1px solid #30363d;border-radius:8px;z-index:2000;padding:14px;font-size:14px;max-height:70vh;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#userPanel.show{display:block}
+
+/* ===== 提示框 ===== */
+#cppHint{display:none;position:fixed;z-index:9999;min-width:160px;max-width:320px;max-height:160px;overflow-y:auto;background:#21262d;border:1px solid #30363d;border-radius:6px;padding:6px 8px;box-shadow:0 4px 12px rgba(0,0,0,0.5)}
+#cppHint .hint-item{display:block;padding:3px 10px;margin:2px;font-family:Consolas,monospace;font-size:18px;color:#e6edf3;cursor:pointer;border-radius:3px;background:#30363d}
+#cppHint .hint-item:hover{background:#3fb950;color:#fff}
+
+/* ===== 提交记录弹窗 ===== */
+#historyPanel{display:none;position:fixed;top:52px;left:50%;transform:translateX(-50%);width:600px;max-width:90vw;background:#21262d;border:1px solid #30363d;border-radius:8px;z-index:2000;padding:14px;max-height:70vh;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#historyPanel.show{display:block}
+/* ===== 运行对话框 ===== */
+#runDialog{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:rgba(0,0,0,0.6);align-items:center;justify-content:center}
+#runDialog.show{display:flex}
+#runDialog .rd-box{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;width:600px;max-width:90vw;max-height:80vh;display:flex;flex-direction:column}
+#runDialog .rd-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #30363d}
+#runDialog .rd-title span{font-size:20px;font-weight:600}
+#runDialog .rd-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+#runDialog textarea{width:100%;padding:8px 10px;background:#0d1117;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:20px;font-family:Consolas,monospace;outline:none;resize:none}
+#runDialog #rd_input{min-height:40px;max-height:100px}
+#runDialog #rd_output{min-height:80px;max-height:200px;margin-top:4px;white-space:pre-wrap;overflow-y:auto}
+#runDialog .rd-btns{display:flex;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid #30363d}
+#runDialog .rd-btns button{flex:1;padding:8px;border-radius:4px;cursor:pointer;font-size:18px;font-weight:500;font-family:inherit}
+/* ===== 密码修改对话框 ===== */
+#pwdDialog{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:210;background:rgba(0,0,0,0.6);align-items:center;justify-content:center}
+#pwdDialog.show{display:flex}
+#pwdDialog .pw-box{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:24px;width:360px;max-width:90vw}
+#pwdDialog .pw-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #30363d}
+#pwdDialog .pw-title span{font-size:20px;font-weight:600}
+#pwdDialog label{display:block;font-size:14px;color:#8b949e;margin:8px 0 3px}
+#pwdDialog input{width:100%;padding:8px 10px;background:#0d1117;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:16px;outline:none;font-family:inherit}
+#pwdDialog input:focus{border-color:#58a6ff}
+#pwdDialog .pw-btns{display:flex;gap:8px;margin-top:14px;padding-top:10px;border-top:1px solid #30363d}
+#pwdDialog .pw-btns button{flex:1;padding:8px;border-radius:4px;cursor:pointer;font-size:16px;font-weight:500;font-family:inherit}
+#pwdDialog .pw-msg{color:#f85149;font-size:13px;margin-top:8px;text-align:center;min-height:20px}
+</style>
+</head>
+<body>
+
+<!-- ===== 登录界面 ===== -->
+<div id="loginOverlay">
+<div class="login-box" id="loginForm">
+<h2>C++ 学习评测系统</h2><p>在线编写代码 · 自动评测</p>
+<label>用户名</label><input id="loginUser" placeholder="请输入用户名">
+<label>密码</label><input id="loginPass" type="password" placeholder="请输入密码">
+<label style="display:flex;align-items:center;gap:6px;margin:8px 0 0;font-size:13px;color:#8b949e;cursor:pointer"><input id="rememberPwd" type="checkbox" style="width:16px;height:16px;accent-color:#3fb950;cursor:pointer"> 记住密码</label>
+<button class="full" id="loginBtn">登录</button>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+<span class="link" id="showRegBtn">注册新账号</span>
+<div class="msg" id="loginMsg"></div></div></div>
+<div class="login-box" id="regForm" style="display:none">
+<h2>注册</h2>
+<label>用户名</label><input id="regUser" placeholder="请设置用户名">
+<label>密码</label><input id="regPass" type="password" placeholder="请设置密码">
+<label>确认密码</label><input id="regPass2" type="password" placeholder="再次输入密码">
+<button class="full" id="regBtn">注册</button>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+<span class="link" id="showLoginBtn">返回登录</span>
+<div class="msg" id="regMsg"></div></div></div></div>
+
+<!-- ===== 主界面 ===== -->
+<div id="mainApp">
+<div id="topbar">
+<span class="logo">C++</span>
+<span style="color:#8b949e;font-size:14px">学习评测系统</span>
+<div class="user-info">欢迎 <strong id="displayName">用户</strong><span id="displayRole" style="font-size:11px;color:#8b949e;margin-left:4px"></span></div>
+<button id="btnAdmin" style="display:none;color:#58a6ff;border-color:#58a6ff">管理</button>
+<button id="btnPwd" style="display:none;color:#d29922;border-color:#d29922">修改密码</button>
+<button id="btnLogout" style="color:#f85149;border-color:#f85149">退出登录</button>
+</div>
+
+<div id="layout">
+
+<!-- ===== 左侧：题目列表 ===== -->
+<div id="sidebar">
+<div id="tabs">
+<button class="active" data-y="1">基础</button>
+<button data-y="2">入门</button>
+<button data-y="3">进阶</button>
+<button data-y="4">提高</button>
+<button data-y="5">强化</button>
+<button data-y="6">综合</button>
+<button data-y="7">竞赛</button>
+<button class="add-prob" id="addProbBtn" style="display:none">+ 出题</button>
+</div>
+<div id="probDetail"></div>
+<div id="problemList"><div style="padding:20px;text-align:center;color:#8b949e;font-size:22px">暂无题目</div></div>
+
+<!-- ===== 出题表单 ===== -->
+<div id="probForm">
+<div class="form-title"><span>出题</span><button id="closeFormBtn" style="background:#f85149;color:#fff;border:1px solid #f85149;font-size:18px;cursor:pointer;padding:4px 16px;border-radius:4px;font-weight:600">✕ 关闭</button></div>
+<div class="form-row">
+<div class="fg"><label>题目名称</label><input id="f_title"></div>
+<div class="fg"><label>序号(ID)</label><input id="f_id" placeholder="自动编号"></div>
+<div class="fg"><label>分类</label><select id="f_y"><option value="1">基础</option><option value="2">入门</option><option value="3">进阶</option><option value="4">提高</option><option value="5">强化</option><option value="6">综合</option><option value="7">竞赛</option></select></div>
+</div>
+<div class="fg"><label>题目描述</label><div id="f_descBox"><textarea id="f_desc" rows="2"></textarea></div><button class="btn-add" id="addDescBtn">+ 添加</button></div>
+<div class="form-row">
+<div class="fg"><label>输入格式</label><div id="f_infBox"><textarea id="f_inf0" rows="1" placeholder="输入格式"></textarea></div><button class="btn-add" id="addInfBtn">+ 添加</button></div>
+<div class="fg"><label>输出格式</label><div id="f_outfBox"><textarea id="f_outf0" rows="1" placeholder="输出格式"></textarea></div><button class="btn-add" id="addOutfBtn">+ 添加</button></div>
+</div>
+<div class="form-row">
+<div class="fg"><label>样例输入</label><div id="f_sampleInputBox"><textarea id="f_si0" rows="2" placeholder="样例输入" style="font-family:Consolas,monospace;width:100%"></textarea></div><button class="btn-add" id="addSampleInputBtn">+ 添加</button></div>
+<div class="fg"><label>样例输出</label><div id="f_sampleOutputBox"><textarea id="f_so0" rows="2" placeholder="样例输出" style="font-family:Consolas,monospace;width:100%"></textarea></div><button class="btn-add" id="addSampleOutputBtn">+ 添加</button></div>
+</div>
+<div class="fg"><label>数据范围</label><div id="f_rangeBox"><textarea rows="1" placeholder="数据范围"></textarea></div><button class="btn-add" id="addRangeBtn">+ 添加</button></div>
+<div class="fg"><label>标准答案代码（隐藏，供评测用）</label><textarea id="f_ref" rows="4" style="font-family:Consolas,monospace;font-size:20px"></textarea></div>
+<div class="form-btns"><button id="saveProbBtn" style="background:#238636;color:#fff;border:1px solid rgba(240,246,252,0.1)">保存</button><button id="clearFormBtn" style="background:#21262d;color:#e6edf3;border:1px solid #30363d">清空</button></div>
+<div id="formMsg" style="font-size:12px;color:#8b949e;margin-top:4px"></div>
+</div>
+</div>
+
+<!-- ===== 右侧：代码编辑器 ===== -->
+<div id="main">
+<div id="editorToolbar">
+<span class="timer">开始时间 <strong id="startTime">--:--:--</strong> | 用时: <strong id="timerDisplay">00:00</strong></span>
+<button class="btn-run" id="runBtn">运行</button>
+<button class="btn-submit" id="submitBtn">提交评测</button>
+<button class="btn-reset" id="resetBtn">重置</button>
+<button id="historyBtn" style="background:#21262d;color:#8b949e;border:1px solid #30363d;padding:5px 14px;border-radius:4px;cursor:pointer;font-size:13px;font-weight:500;font-family:inherit">提交记录</button>
+</div>
+<div id="editorWrap"><textarea id="codeEditor" spellcheck="false">#include <iostream>
+using namespace std;
+int main() {
+    return 0;
+}</textarea></div>
+<div id="resultsPanel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-weight:600;font-size:18px">运行结果</span><span id="closeRB" style="cursor:pointer;color:#f85149;font-size:20px;font-weight:bold">✕</span></div><div id="resultsBody"></div></div>
+</div>
+</div>
+</div>
+
+<!-- ===== 提示框 ===== -->
+<div id="cppHint"></div>
+
+<!-- ===== 用户管理面板 ===== -->
+<div id="userPanel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #30363d"><span style="font-weight:600;color:#e6edf3;font-size:16px">用户管理</span><span id="closeUP" style="cursor:pointer;color:#f85149;font-size:20px;font-weight:bold">✕</span></div><div id="userList">加载中..</div></div>
+
+<!-- ===== 提交记录面板 ===== -->
+<div id="historyPanel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #30363d"><span style="font-weight:600;color:#e6edf3;font-size:16px">提交记录</span><span id="closeHP" style="cursor:pointer;color:#f85149;font-size:20px;font-weight:bold">✕</span></div><div id="historyBody"></div></div>
+
+<!-- ===== 运行对话框 ===== -->
+<div id="runDialog"><div class="rd-box">
+<div class="rd-title"><span>运行</span><span id="closeRD" style="cursor:pointer;color:#f85149;font-size:24px;font-weight:bold">✕</span></div>
+<div class="rd-body">
+<label style="color:#8b949e;font-size:16px">标准输入 (stdin)</label>
+<textarea id="rd_input" rows="2" placeholder="输入程序运行所需的数据（可选）"></textarea>
+<label style="color:#8b949e;font-size:16px;margin-top:4px">输出结果</label>
+<textarea id="rd_output" rows="5" readonly placeholder="运行结果将显示在这里"></textarea>
+</div>
+<div class="rd-btns">
+<button id="rd_runBtn" style="background:#238636;color:#fff;border:1px solid rgba(240,246,252,0.1)">运行</button>
+<button id="rd_closeBtn" style="background:#21262d;color:#8b949e;border:1px solid #30363d">关闭</button>
+</div>
+</div></div>
+<!-- ===== 密码修改对话框 ===== -->
+<div id="pwdDialog"><div class="pw-box">
+<div class="pw-title"><span>修改密码</span><span id="closePWD" style="cursor:pointer;color:#f85149;font-size:24px;font-weight:bold">✕</span></div>
+<label>当前密码</label><input id="pw_old" type="password" placeholder="输入当前密码">
+<label>新密码</label><input id="pw_new" type="password" placeholder="请设置新密码">
+<label>确认新密码</label><input id="pw_confirm" type="password" placeholder="再次输入新密码">
+<div class="pw-msg" id="pwMsg"></div>
+<div class="pw-btns">
+<button id="pw_saveBtn" style="background:#238636;color:#fff;border:1px solid rgba(240,246,252,0.1)">确认修改</button>
+<button id="pw_cancelBtn" style="background:#21262d;color:#8b949e;border:1px solid #30363d">取消</button>
+</div>
+</div></div>
+<script>
+var API = window.API_URL || "";
+/* ===== 数据 ===== */
+var cu=null,cr=null,probs=[],cid=null,cy=1,st=null,ti=null,eid=null;
+function ls(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function ss(k,v){localStorage.setItem(k,JSON.stringify(v))}
+
+// 初始化默认数据
+(function(){
+  var us=ls("users");
+  if(!us){us={};us["admin"]={password:"admin123",name:"管理员",role:"admin",bi:true};ss("users",us)}
+  if(!ls("subs"))ss("subs",[])
+  if(!ls("problems"))ss("problems",[])
+})();
+
+function esc(s){if(!s)return"";return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+/* ===== 自动调整文本框高度 ===== */
+function ar(e){
+  if(!e)return;
+  var fn=function(){this.style.height="auto";this.style.height=Math.max(28,this.scrollHeight)+"px"};
+  e.style.height="auto";e.style.height=Math.max(28,e.scrollHeight)+"px";e.oninput=fn;e.onfocus=fn
+}
+function autoResizeAll(){document.querySelectorAll("#probForm textarea").forEach(function(e){ar(e)})}
+
+/* ===== 计时器 ===== */
+function stm(){
+  st=new Date();var e=document.getElementById("startTime");
+  e.textContent=st.getHours().toString().padStart(2,"0")+":"+st.getMinutes().toString().padStart(2,"0")+":"+st.getSeconds().toString().padStart(2,"0");
+  if(ti)clearInterval(ti);ti=setInterval(function(){
+    var n=new Date(),d=Math.floor((n-st)/1000);
+    document.getElementById("timerDisplay").textContent=Math.floor(d/60).toString().padStart(2,"0")+":"+(d%60).toString().padStart(2,"0")
+  },1000)
+}
+
+// 加载保存的账号密码
+(function(){var s=ls("remember");if(s&&s.u){var e1=document.getElementById("loginUser"),e2=document.getElementById("loginPass"),e3=document.getElementById("rememberPwd");if(e1&&e2&&e3){e1.value=s.u||"";e2.value=s.p||"";e3.checked=!!s.u}}})();
+
+/* ===== 登录 ===== */
+document.getElementById("loginBtn").onclick=function(){
+  var u=document.getElementById("loginUser").value.trim();
+  var p=document.getElementById("loginPass").value;
+  var m=document.getElementById("loginMsg");
+  if(!u||!p){m.textContent="请输入用户名和密码";return}
+  var us=ls("users")||{};var r=us[u];
+  if(!r||r.password!==p){m.textContent="用户名或密码错误";return}
+  if(r.role==="student"&&r.status==="pending"){m.textContent="账号待管理员审批";return}
+  cu=u;cr=r.role||"student";
+  document.getElementById("displayName").textContent=r.name||u;
+  document.getElementById("displayRole").textContent="("+(cr==="admin"?"管理员":"学生")+")";
+  document.getElementById("btnAdmin").style.display=cr==="admin"?"":"none";document.getElementById("btnPwd").style.display="";
+  document.getElementById("addProbBtn").style.display="";
+  if(document.getElementById("rememberPwd").checked){ss("remember",{u:u,p:p})}else{ss("remember",null)}
+  document.getElementById("loginOverlay").style.display="none";
+  document.getElementById("mainApp").classList.add("show");
+  rp();stm()
+};
+
+document.getElementById("loginPass").onkeydown=function(e){
+  if(e.key==="Enter")document.getElementById("loginBtn").onclick()
+};
+
+document.getElementById("regBtn").onclick=function(){
+  var u=document.getElementById("regUser").value.trim();
+  var p=document.getElementById("regPass").value;
+  var p2=document.getElementById("regPass2").value;
+  var m=document.getElementById("regMsg");
+  if(!u||!p){m.textContent="请填写用户名和密码";return}
+  if(p!==p2){m.textContent="两次密码不一致";return}
+  if(p.length<4){m.textContent="密码至少4位";return}
+  var us=ls("users")||{};
+  if(us[u]){m.textContent="用户名已存在";return}
+  if(u==="admin"){m.textContent="不能注册";return}
+  us[u]={password:p,name:u,role:"student",status:"pending",createdAt:Date.now()};
+  ss("users",us);m.style.color="#3fb950";m.textContent="注册成功，等待管理员审批"
+};
+
+document.getElementById("showRegBtn").onclick=function(){
+  document.getElementById("loginForm").style.display="none";
+  document.getElementById("regForm").style.display="block";
+  document.getElementById("loginMsg").textContent=""
+};
+document.getElementById("showLoginBtn").onclick=function(){
+  document.getElementById("regForm").style.display="none";
+  document.getElementById("loginForm").style.display="block";
+  document.getElementById("regMsg").textContent=""
+};
+
+document.getElementById("btnPwd").onclick=function(){document.getElementById("pw_old").value="";document.getElementById("pw_new").value="";document.getElementById("pw_confirm").value="";document.getElementById("pwMsg").textContent="";document.getElementById("pwdDialog").style.display="flex"};
+document.getElementById("btnLogout").onclick=function(){
+  cu=null;cr=null;if(ti)clearInterval(ti);
+  document.getElementById("mainApp").classList.remove("show");
+  document.getElementById("loginOverlay").style.display="flex";
+  document.getElementById("loginForm").style.display="block";
+  document.getElementById("regForm").style.display="none";
+  document.getElementById("loginUser").value="";
+  document.getElementById("loginPass").value="";
+  document.getElementById("loginMsg").textContent=""
+};
+
+/* ===== 分类切换 ===== */
+(function(){
+  var btns=document.querySelectorAll("#tabs button[data-y]");
+  for(var i=0;i<btns.length;i++){
+    btns[i].onclick=function(){
+      var all=document.querySelectorAll("#tabs button[data-y]");
+      for(var j=0;j<all.length;j++)all[j].className="";
+      this.className="active";cy=parseInt(this.getAttribute("data-y"));rp()
+    }
+  }
+})();
+
+/* ===== 渲染题目列表 ===== */
+function rp(){
+  probs=ls("problems")||[];
+  var f=probs.filter(function(p){return p.y===cy});
+  var l=document.getElementById("problemList");
+  if(!f.length){
+    l.innerHTML="<div style=padding:20px;text-align:center;color:#8b949e;font-size:22px>当前分类暂无题目</div>";
+    return
+  }
+  var yNames=["","基础","入门","进阶","提高","强化","综合","竞赛"];
+  l.innerHTML=f.sort(function(a,b){
+    var oa=parseInt(a.displayOrder)||999999;
+    var ob=parseInt(b.displayOrder)||999999;
+    return oa-ob
+  }).map(function(p){
+    var a=cid===p.id?" active":"";
+    var yt=yNames[p.y]||"Y"+p.y;
+    return "<div class=prob-item"+a+" onclick=selProb(\""+p.id+"\")><span class=num>"+esc(p.displayOrder||"")+"</span><span class=name>"+esc(p.title)+"</span><span class=y-tag>"+yt+"</span>"+
+      (cr==="admin"?"<span style=margin-left:auto;display:flex;gap:4px><button onclick=event.stopPropagation();editProb(\""+p.id+"\") style=color:#3fb950;background:none;border:1px solid #3fb950;border-radius:3px;padding:1px 8px;cursor:pointer;font-size:16px>编辑</button><button onclick=event.stopPropagation();delProb(\""+p.id+"\") style=color:#f85149;background:none;border:1px solid #f85149;border-radius:3px;padding:1px 8px;cursor:pointer;font-size:16px>删除</button></span>":"<span style=margin-left:auto;display:flex;gap:4px><button onclick=event.stopPropagation();editProb(\""+p.id+"\") style=color:#3fb950;background:none;border:1px solid #3fb950;border-radius:3px;padding:1px 8px;cursor:pointer;font-size:16px>编辑</button></span>")+
+      "</div>"
+  }).join("")
+}
+
+/* ===== 选择题目 ===== */
+function selProb(id){
+  cid=id;probs=ls("problems")||[];
+  var p=probs.find(function(x){return x.id===id});
+  if(!p)return;
+  var dt=document.getElementById("probDetail");
+  var h="<div class=detail-hdr><span class=detail-label>题目描述</span><button onclick=document.getElementById(\"probDetail\").className=\"\" style=color:#fff;background:#3fb950;border:1px solid #3fb950;border-radius:3px;padding:2px 12px;cursor:pointer;font-size:18px>返回</button></div>";
+  h+="<div class=detail-sample>"+esc(p.desc||"")+"</div>";
+  if(p.inputFormat)h+="<div class=detail-label>输入格式</div><div class=detail-sample>"+esc(p.inputFormat)+"</div>";
+  if(p.outputFormat)h+="<div class=detail-label>输出格式</div><div class=detail-sample>"+esc(p.outputFormat)+"</div>";
+  var si=p.testIns||[],so=p.testOuts||[];
+  for(var i=0;i<si.length;i++){
+    if(si[i]||so[i]){
+      h+="<div class=detail-label>样例输入 "+(i+1)+"</div><div class=detail-sample>"+esc(si[i])+"</div>";
+      h+="<div class=detail-label>样例输出 "+(i+1)+"</div><div class=detail-sample>"+esc(so[i])+"</div>"
+    }
+  }
+  if(p.range)h+="<div class=detail-label>数据范围</div><div class=detail-sample>"+esc(p.range)+"</div>";
+  dt.innerHTML=h;dt.className="show";stm();rp()
+}
+
+/* ===== 出题 ===== */
+document.getElementById("addProbBtn").onclick=function(){
+  eid=null;clearForm();document.getElementById("probForm").className="show"
+};
+document.getElementById("closeFormBtn").onclick=function(){
+  document.getElementById("probForm").className=""
+};
+
+// 添加输入格式
+document.getElementById("addInfBtn").onclick=function(){
+  var b=document.getElementById("f_infBox");
+  var t=document.createElement("textarea");t.rows=1;t.placeholder="输入格式";
+  t.style.cssText="width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px;display:block;margin-bottom:4px";
+  var d=document.createElement("button");d.textContent="✕";
+  d.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:2px 6px;margin-bottom:4px";
+  d.onclick=function(){t.remove();d.remove()};
+  b.appendChild(t);b.appendChild(d);ar(t)
+};
+
+// 添加输出格式
+document.getElementById("addOutfBtn").onclick=function(){
+  var b=document.getElementById("f_outfBox");
+  var t=document.createElement("textarea");t.rows=1;t.placeholder="输出格式";
+  t.style.cssText="width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px;display:block;margin-bottom:4px";
+  var d=document.createElement("button");d.textContent="✕";
+  d.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:2px 6px;margin-bottom:4px";
+  d.onclick=function(){t.remove();d.remove()};
+  b.appendChild(t);b.appendChild(d);ar(t)
+};
+
+// 添加样例
+// 添加样例输入
+document.getElementById("addSampleInputBtn").onclick=function(){
+  var b=document.getElementById("f_sampleInputBox");
+  var t=document.createElement("textarea");t.rows=2;t.placeholder="样例输入";
+  t.style.cssText="font-family:Consolas,monospace;width:100%;padding:4px 7px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;outline:none;resize:none;min-height:28px;display:block;margin-bottom:4px";
+  var d=document.createElement("button");d.textContent="✕";
+  d.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:2px 6px;margin-bottom:4px";
+  d.onclick=function(){t.remove();d.remove()};
+  b.appendChild(t);b.appendChild(d);ar(t)
+};
+
+// 添加样例输出
+document.getElementById("addSampleOutputBtn").onclick=function(){
+  var b=document.getElementById("f_sampleOutputBox");
+  var t=document.createElement("textarea");t.rows=2;t.placeholder="样例输出";
+  t.style.cssText="font-family:Consolas,monospace;width:100%;padding:4px 7px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;outline:none;resize:none;min-height:28px;display:block;margin-bottom:4px";
+  var d=document.createElement("button");d.textContent="✕";
+  d.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:2px 6px;margin-bottom:4px";
+  d.onclick=function(){t.remove();d.remove()};
+  b.appendChild(t);b.appendChild(d);ar(t)
+};
+
+
+// 添加数据范围
+document.getElementById("addRangeBtn").onclick=function(){
+  var b=document.getElementById("f_rangeBox");
+  var dv=document.createElement("div");dv.style.cssText="display:flex;align-items:flex-start;margin-bottom:4px";
+  var t=document.createElement("textarea");t.rows=1;t.placeholder="数据范围";
+  t.style.cssText="width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px";
+  var x=document.createElement("button");x.textContent="✕";
+  x.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:0 6px;margin-left:4px";
+  x.onclick=function(){dv.remove()};
+  dv.appendChild(t);dv.appendChild(x);b.appendChild(dv);ar(t)
+};
+// 添加题目描述
+document.getElementById("addDescBtn").onclick=function(){
+  var b=document.getElementById("f_descBox");
+  var t=document.createElement("textarea");t.rows=2;t.placeholder="题目描述";
+  t.style.cssText="width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px;display:block;margin-bottom:4px";
+  var d=document.createElement("button");d.textContent="✕";
+  d.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:2px 6px;margin-bottom:4px";
+  d.onclick=function(){t.remove();d.remove()};
+  b.appendChild(t);b.appendChild(d);ar(t)
+};
+
+// 清空表单
+function clearForm(){
+  eid=null;
+  document.getElementById("f_title").value="";
+  document.getElementById("f_id").value="";
+  document.getElementById("f_descBox").innerHTML="<textarea id=f_desc rows=2 style=width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px></textarea>";
+  document.getElementById("f_ref").value="";
+  document.getElementById("f_infBox").innerHTML="<textarea rows=1 placeholder=输入格式 style=width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px></textarea>";
+  document.getElementById("f_outfBox").innerHTML="<textarea rows=1 placeholder=输出格式 style=width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px></textarea>";
+  document.getElementById("f_rangeBox").innerHTML="<div style=display:flex;align-items:flex-start;margin-bottom:4px><textarea rows=1 placeholder=数据范围 style=width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px></textarea></div>";
+  document.getElementById("f_sampleInputBox").innerHTML="<textarea id=f_si0 rows=2 placeholder=样例输入 style=font-family:Consolas,monospace;width:100%;padding:4px 7px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;outline:none;resize:none;min-height:28px></textarea>";document.getElementById("f_sampleOutputBox").innerHTML="<textarea id=f_so0 rows=2 placeholder=样例输出 style=font-family:Consolas,monospace;width:100%;padding:4px 7px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;outline:none;resize:none;min-height:28px></textarea>";void "<div class=sample-pair><textarea rows=2 placeholder=样例输入 style=font-family:Consolas,monospace;flex:1;padding:4px 7px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;outline:none;resize:none;min-height:28px></textarea><textarea rows=2 placeholder=样例输出 style=font-family:Consolas,monospace;flex:1;padding:4px 7px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;outline:none;resize:none;min-height:28px></textarea></div>";
+  document.getElementById("formMsg").textContent="";
+  setTimeout(autoResizeAll,10)
+}
+
+// 清空按钮
+document.getElementById("clearFormBtn").onclick=clearForm;
+
+// 保存题目
+document.getElementById("saveProbBtn").onclick=function(){
+  var t=document.getElementById("f_title").value.trim();
+  if(!t){document.getElementById("formMsg").textContent="请输入题目名称";return}
+  var y=parseInt(document.getElementById("f_y").value);
+  var d=[].map.call(document.querySelectorAll("#f_descBox textarea"),function(t){return t.value}).filter(Boolean).join("\n");
+  var si=[].map.call(document.querySelectorAll("#f_sampleInputBox textarea"),function(t){return t.value}).filter(Boolean);
+  var so=[].map.call(document.querySelectorAll("#f_sampleOutputBox textarea"),function(t){return t.value}).filter(Boolean);
+  var inf=[];var inTA=document.querySelectorAll("#f_infBox textarea");
+  for(var i=0;i<inTA.length;i++)inf.push(inTA[i].value);
+  var infs=inf.join("\n");
+  var outf=[];var outTA=document.querySelectorAll("#f_outfBox textarea");
+  for(var i=0;i<outTA.length;i++)outf.push(outTA[i].value);
+  var outfs=outf.join("\n");
+  var rg=[];var rgTA=document.querySelectorAll("#f_rangeBox textarea");
+  for(var i=0;i<rgTA.length;i++)rg.push(rgTA[i].value);
+  var rgs=rg.join("\n");
+  var rf=document.getElementById("f_ref").value;
+  var did=document.getElementById("f_id").value.trim()||"";
+  var pl=ls("problems")||[];
+  if(eid){
+    var idx=pl.findIndex(function(p){return p.id===eid});
+    if(idx>=0){
+      pl[idx]={id:eid,y:y,title:t,desc:d,testIns:si,testOuts:so,range:rgs,ref:rf,displayOrder:did,inputFormat:infs,outputFormat:outfs}
+    }
+  }else{
+    pl.push({id:Date.now().toString(),y:y,title:t,desc:d,testIns:si,testOuts:so,range:rgs,ref:rf,displayOrder:did,inputFormat:infs,outputFormat:outfs})
+  }
+  ss("problems",pl);eid=null;document.getElementById("formMsg").textContent="题目保存成功！";
+  clearForm();rp()
+};
+
+// 编辑题目
+function editProb(id){
+  probs=ls("problems")||[];var p=probs.find(function(x){return x.id===id});
+  if(!p)return;eid=id;
+  document.getElementById("probForm").className="show";
+  document.getElementById("f_title").value=p.title||"";
+  document.getElementById("f_id").value=p.displayOrder||"";
+  document.getElementById("f_y").value=String(p.y||1);
+  // 题目描述
+  var db=document.getElementById("f_descBox");db.innerHTML="";
+  var dl=(p.desc||"").split("\n").filter(function(l){return l});
+  if(!dl.length)dl=[""];
+  for(var i=0;i<dl.length;i++){
+    var t=document.createElement("textarea");t.rows=2;t.placeholder="题目描述";t.value=dl[i];
+    t.style.cssText="width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px;display:block;margin-bottom:4px";
+    var d=document.createElement("button");d.textContent="✕";
+    d.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:2px 6px;margin-bottom:4px";
+    d.onclick=(function(ta,btn){return function(){ta.remove();btn.remove()}})(t,d);
+    db.appendChild(t);if(i>0)db.appendChild(d);ar(t)
+  }
+  
+  // 输入格式
+  var ib=document.getElementById("f_infBox");ib.innerHTML="";
+  var il=(p.inputFormat||"").split("\n").filter(function(l){return l});
+  if(!il.length)il=[""];
+  for(var i=0;i<il.length;i++){
+    var t=document.createElement("textarea");t.rows=1;t.placeholder="输入格式";t.value=il[i];
+    t.style.cssText="width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px;display:block;margin-bottom:4px";
+    var d=document.createElement("button");d.textContent="✕";
+    d.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:2px 6px;margin-bottom:4px";
+    d.onclick=(function(ta,btn){return function(){ta.remove();btn.remove()}})(t,d);
+    ib.appendChild(t);ib.appendChild(d);ar(t)
+  }
+  
+  // 输出格式
+  var ob=document.getElementById("f_outfBox");ob.innerHTML="";
+  var ol=(p.outputFormat||"").split("\n").filter(function(l){return l});
+  if(!ol.length)ol=[""];
+  for(var i=0;i<ol.length;i++){
+    var t=document.createElement("textarea");t.rows=1;t.placeholder="输出格式";t.value=ol[i];
+    t.style.cssText="width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px;display:block;margin-bottom:4px";
+    var d=document.createElement("button");d.textContent="✕";
+    d.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:2px 6px;margin-bottom:4px";
+    d.onclick=(function(ta,btn){return function(){ta.remove();btn.remove()}})(t,d);
+    ob.appendChild(t);ob.appendChild(d);ar(t)
+  }
+  
+  // 样例
+  var sib=document.getElementById("f_sampleInputBox");sib.innerHTML="";
+  var sob=document.getElementById("f_sampleOutputBox");sob.innerHTML="";
+  var ssi=p.testIns||[],sso=p.testOuts||[],ns=Math.max(ssi.length,sso.length,0);
+  if(!ns){ns=1}
+  for(var i=0;i<ns;i++){
+    var t1=document.createElement("textarea");t1.rows=2;t1.placeholder="样例输入";t1.value=ssi[i]||"";
+    t1.style.cssText="font-family:Consolas,monospace;width:100%;padding:4px 7px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;outline:none;resize:none;min-height:28px;display:block;margin-bottom:4px";
+    var t2=document.createElement("textarea");t2.rows=2;t2.placeholder="样例输出";t2.value=sso[i]||"";
+    t2.style.cssText="font-family:Consolas,monospace;width:100%;padding:4px 7px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;outline:none;resize:none;min-height:28px;display:block;margin-bottom:4px";
+    if(i>0){
+      var x1=document.createElement("button");x1.textContent="✕";
+      x1.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:2px 6px;margin-bottom:4px";
+      x1.onclick=(function(ta){return function(){ta.remove();x1.remove()}})(t1);
+      sib.appendChild(x1)
+    }
+    sib.appendChild(t1);ar(t1);
+    if(i>0){
+      var x2=document.createElement("button");x2.textContent="✕";
+      x2.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:2px 6px;margin-bottom:4px";
+      x2.onclick=(function(ta){return function(){ta.remove();x2.remove()}})(t2);
+      sob.appendChild(x2)
+    }
+    sob.appendChild(t2);ar(t2)
+  }
+  
+  // 数据范围
+  var rb=document.getElementById("f_rangeBox");rb.innerHTML="";
+  var rl=(p.range||"").split("\n").filter(function(l){return l});
+  if(!rl.length)rl=[""];
+  for(var i=0;i<rl.length;i++){
+    var dv=document.createElement("div");dv.style.cssText="display:flex;align-items:flex-start;margin-bottom:4px";
+    var tt=document.createElement("textarea");tt.rows=1;tt.placeholder="数据范围";tt.value=rl[i];
+    tt.style.cssText="width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:22px;font-family:inherit;outline:none;resize:none;min-height:28px";
+    var x=document.createElement("button");x.textContent="✕";
+    x.style.cssText="background:none;border:none;color:#f85149;cursor:pointer;font-size:18px;padding:0 6px;margin-left:4px";
+    x.onclick=(function(dv){return function(){dv.remove()}})(dv);
+    dv.appendChild(tt);dv.appendChild(x);rb.appendChild(dv);ar(tt)
+  }
+  
+  document.getElementById("f_ref").value=p.ref||"";
+  document.getElementById("formMsg").textContent="编辑模式";
+  setTimeout(autoResizeAll,10)
+}
+
+// 删除题目
+function delProb(id){
+  if(!confirm("确定要删除这道题吗？"))return;
+  probs=ls("problems")||[];probs=probs.filter(function(p){return p.id!==id});
+  ss("problems",probs);
+  if(cid===id){cid=null;document.getElementById("probDetail").className=""}
+  rp()
+}
+
+/* ===== C++ 自动提示（与 test_hint.html 一致） ===== */
+var kw=["auto","break","case","catch","class","const","continue","default","delete","do","double","else","enum","explicit","export","extern","false","float","for","friend","goto","if","include","inline","int","long","namespace","new","operator","override","private","protected","public","return","short","signed","sizeof","static","struct","switch","template","this","throw","true","try","typedef","typename","union","unsigned","using","virtual","void","volatile","while","bool","char","string","vector","map","set","list","queue","stack","pair","make_pair","push_back","push","pop","begin","end","size","empty","cout","cin","endl","main","stdio","iostream","algorithm","bits/stdc++.h","std"];
+
+(function(){
+  var ed=document.getElementById("codeEditor");
+  var ht=document.getElementById("cppHint");
+  
+  function chk(){
+    try{
+      var txt=ed.value;
+      var pos=ed.selectionStart;
+      var pre=txt.substring(0,pos);
+      var m=pre.match(/[\w.]*$/);
+      if(!m||!m[0]||m[0].length<1){
+        ht.style.display="none";
+        return
+      }
+      var prefix=m[0].toLowerCase();
+      var ws=[];
+      for(var i=0;i<kw.length;i++){
+        if(kw[i].indexOf(prefix)===0&&kw[i]!==prefix)ws.push(kw[i]);
+        if(ws.length>=15)break
+      }
+      if(!ws.length){ht.style.display="none";return}
+      var r=ed.getBoundingClientRect();
+      var lines=pre.split("\n");
+      var lh=parseInt(getComputedStyle(ed).lineHeight)||28;
+      ht.style.left=(r.left+10)+"px";
+      ht.style.top=(r.top+lines.length*lh+8)+"px";
+      ht.innerHTML=ws.map(function(w){
+        return "<div class=hint-item onclick=insertHint(\""+w+"\")>"+w+"</div>"
+      }).join("");
+      ht.style.display="block"
+    }catch(e){
+      ht.style.display="none"
+    }
+  }
+  
+  ed.oninput=chk;
+  ed.onkeyup=chk;
+  ed.onclick=chk;
+  ed.onfocus=chk;
+  ed.onkeydown=function(e){
+    if(ht.style.display==="none")return;
+    if(e.key==="Escape"||e.key==="Enter"||e.key==="Tab"||e.key===" "||e.key===";"||e.key==="("||e.key===")"||e.key==="{"||e.key==="}"||e.key==="<"||e.key===">"){
+      ht.style.display="none";
+      if(e.key==="Escape")e.preventDefault()
+    }
+  };
+  ed.onblur=function(){setTimeout(function(){ht.style.display="none"},200)};
+  ed.onscroll=function(){ht.style.display="none"}
+})();
+
+function insertHint(w){
+  var ed=document.getElementById("codeEditor");
+  var pos=ed.selectionStart;
+  var txt=ed.value;
+  var pre=txt.substring(0,pos);
+  var m=pre.match(/[\w.]*$/);
+  if(m){
+    var start=pos-m[0].length;
+    ed.value=txt.substring(0,start)+w+txt.substring(pos);
+    ed.selectionStart=ed.selectionEnd=start+w.length
+  }
+  ed.focus();
+  document.getElementById("cppHint").style.display="none"
+}
+
+/* ===== 运行（Judge0 API） ===== */
+document.getElementById("runBtn").onclick=function(){
+  document.getElementById("rd_input").value="";
+  document.getElementById("rd_output").value="";
+  document.getElementById("runDialog").style.display="flex"
+};
+
+document.getElementById("closeRD").onclick=function(){document.getElementById("runDialog").style.display="none"};
+document.getElementById("rd_closeBtn").onclick=function(){document.getElementById("runDialog").className=""};
+
+document.getElementById("rd_runBtn").onclick=async function(){
+  var c=document.getElementById("codeEditor").value;
+  var stdin=document.getElementById("rd_input").value;
+  if(!c.trim()){document.getElementById("rd_output").value="错误：代码为空";return}
+  document.getElementById("rd_output").value="运行中...";
+  try{
+    var r=await fetch(API + "/api/submit",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({source_code:c,language_id:76,stdin:stdin})
+    });
+    var d=await r.json();
+    if(d.status&&d.status.id===3){
+      document.getElementById("rd_output").value=d.stdout||"（无输出）"
+    }else{
+      document.getElementById("rd_output").value=d.compile_output||d.status.description||"未知错误"
+    }
+  }catch(e){document.getElementById("rd_output").value="网络错误: "+e.message}
+};
+
+
+document.getElementById("closePWD").onclick=function(){document.getElementById("pwdDialog").style.display="none"};
+document.getElementById("pw_cancelBtn").onclick=function(){document.getElementById("pwdDialog").className=""};
+
+document.getElementById("pw_saveBtn").onclick=function(){
+  var old=document.getElementById("pw_old").value;
+  var nw=document.getElementById("pw_new").value;
+  var cf=document.getElementById("pw_confirm").value;
+  var msg=document.getElementById("pwMsg");
+  if(!old||!nw){msg.textContent="请填写密码";return}
+  if(nw.length<4){msg.textContent="新密码至少4位";return}
+  if(nw!==cf){msg.textContent="两次密码不一致";return}
+  var us=ls("users")||{};
+  var u=us[cu];
+  if(!u||u.password!==old){msg.textContent="当前密码错误";return}
+  u.password=nw;
+  ss("users",us);
+  msg.style.color="#3fb950";
+  msg.textContent="密码修改成功！";
+  setTimeout(function(){document.getElementById("pwdDialog").className=""},1200);
+};
+/* ===== Judge0 辅助函数 ===== */
+async function judge0(code,input){
+  try{
+    var r=await fetch(API + "/api/submit",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({source_code:code,language_id:76,stdin:input||""})
+    });
+    var d=await r.json();
+    if(d.status&&d.status.id===6)return{ok:false,error:d.compile_output||"编译错误"};
+    if(d.status&&d.status.id!==3)return{ok:false,error:(d.status.description||"错误")+(d.stderr?": "+d.stderr:"")};
+    return{ok:true,output:d.stdout||""}
+  }catch(e){return{ok:false,error:e.message}}
+}
+function nm(s){if(!s)return"";return s.replace(/\r\n/g,"\n").replace(/\s+$/,"").trimEnd()}
+
+/* ===== 提交评测 ===== */
+document.getElementById("submitBtn").onclick=async function(){
+  var code=document.getElementById("codeEditor").value;
+  if(!code.trim()){showR('<div style=color:#f85149>代码为空</div>');return}
+  if(!cid){showR('<div style=color:#f85149>请先选择一个题目</div>');return}
+  probs=ls("problems")||[];
+  var p=probs.find(function(x){return x.id===cid});
+  if(!p){showR('<div style=color:#f85149>题目不存在</div>');return}
+  var ins=p.testIns||[],outs=p.testOuts||[];
+  if(!ins.length){showR('<div style=color:#8b949e>该题目没有测试用例</div>');return}
+  showR('<div style=color:#8b949e>正在评测...</div>');
+  var res=[],passed=0;
+  for(var i=0;i<ins.length;i++){
+    var r=await judge0(code,ins[i]||"");
+    if(r.ok){
+      var a=nm(r.output),e=nm(outs[i]||""),ok=a===e;
+      if(ok)passed++;
+      res.push({n:i+1,ok:ok})
+    }else{res.push({n:i+1,ok:false,err:r.error})}
+  }
+  var total=res.length,score=total>0?Math.round(passed/total*100):0;
+  var h='<div style=font-size:20px;font-weight:bold;margin-bottom:6px>'+score+"分 ("+passed+"/"+total+")</div>";
+  for(var i=0;i<res.length;i++){
+    var r2=res[i];
+    h+='<div class=r-item><span style=color:#8b949e>测试#'+(i+1)+"</span> <span class="+(r2.ok?"pass":"fail")+">"+(r2.ok?"通过":"失败")+"</span>"+(r2.err?' <span style=color:#f85149;font-size:18px>'+esc(r2.err)+"</span>":"")+"</div>"
+  }
+  showR(h);
+  var subs=ls("subs")||[];
+  subs.unshift({id:Date.now(),code:code,problemTitle:p.title,problemId:cid,score:score,total:total,passedCount:passed,results:res,time:Date.now()});
+  if(subs.length>500)subs.length=500;
+  ss("subs",subs)
+};
+
+/* ===== 显示结果 ===== */
+function showR(h){
+  var p=document.getElementById("resultsPanel");
+  var b=document.getElementById("resultsBody");
+  b.innerHTML="<div>"+h+"</div>";p.className="show"
+}
+document.getElementById("closeRB").onclick=function(){
+  document.getElementById("resultsPanel").classList.remove("show")
+};
+
+/* ===== 重置 ===== */
+document.getElementById("resetBtn").onclick=function(){
+  if(!confirm("确定要重置代码吗？"))return;
+  document.getElementById("codeEditor").value="#include <iostream>\nusing namespace std;\nint main() {\n    return 0;\n}";
+  document.getElementById("resultsPanel").className=""
+};
+
+/* ===== 提交记录 ===== */
+document.getElementById("historyBtn").onclick=function(){
+  var subs=ls("subs")||[];
+  if(!subs.length){
+    document.getElementById("historyBody").innerHTML='<div style=color:#8b949e;font-size:18px;text-align:center;padding:20px>暂无提交记录</div>';
+    document.getElementById("historyPanel").className="show";return
+  }
+  var h="";
+  for(var i=0;i<Math.min(subs.length,50);i++){
+    var s=subs[i];var d2=new Date(s.time);
+    var t=d2.getHours().toString().padStart(2,"0")+":"+d2.getMinutes().toString().padStart(2,"0")+":"+d2.getSeconds().toString().padStart(2,"0");
+    h+='<div class=r-item style=cursor:pointer;border-bottom:1px solid #30363d><span style=color:#8b949e>'+t+"</span> <span class="+(s.score===100?"pass":"fail")+">"+s.score+"分</span> <span style=color:#8b949e;font-size:18px>"+esc(s.problemTitle||"")+"</span></div>"
+  }
+  document.getElementById("historyBody").innerHTML=h;
+  document.getElementById("historyPanel").className="show"
+};
+document.getElementById("closeHP").onclick=function(){
+  document.getElementById("historyPanel").className=""
+};
+
+/* ===== 用户管理 ===== */
+function refreshUserList(){
+  var us=ls("users")||{},h="";
+  for(var u in us){
+    var r=us[u];
+    if(r.bi)continue;
+    var st=r.status==="pending"?"⏳ 待审核":"✅ 已激活",exp="";
+    if(r.expiresAt){
+      var df=Math.floor((r.expiresAt-Date.now())/1000);
+      if(df>0){
+        var dh=Math.floor(df/3600);
+        exp=dh>=24?Math.floor(dh/24)+"天 "+dh%24+"h":"约"+dh+"小时"
+      }else exp="已过期"
+    }else exp="无限制";
+    h+='<div style=display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #30363d><div><div style=font-size:18px>'+u+" ("+r.role+")</div><div style=font-size:13px;color:#8b949e>"+st+" | "+exp+"</div></div>"+
+      (r.status==="pending"?'<button onclick="apprUser(\''+u+'\')" style=background:#238636;color:#fff;border:none;border-radius:3px;padding:3px 12px;cursor:pointer;font-size:18px>批准</button>':r.role!=="admin"?'<button onclick="rechUser(\''+u+'\')" style=background:#238636;color:#fff;border:none;border-radius:3px;padding:3px 12px;cursor:pointer;font-size:18px;margin-right:4px>加时</button><button onclick="delUser(\''+u+'\')" style=background:#f85149;color:#fff;border:none;border-radius:3px;padding:3px 12px;cursor:pointer;font-size:18px>删除</button>':
+      "")+"</div>"
+  }
+  document.getElementById("userList").innerHTML=h||"<div style=color:#8b949e;font-size:18px;text-align:center;padding:10px>无用户</div>"
+}
+
+document.getElementById("btnAdmin").onclick=function(){
+  var p=document.getElementById("userPanel");
+  if(p.className==="show"){p.className="";return}
+  p.className="show";refreshUserList()
+};
+document.getElementById("closeUP").onclick=function(){
+  document.getElementById("userPanel").className=""
+};
+
+function apprUser(u){
+  if(!confirm("批准用户 "+u+" 并设置使用时间24小时？"))return;
+  var us=ls("users")||{};if(!us[u])return;
+  us[u].status="active";us[u].expiresAt=Date.now()+86400000;
+  ss("users",us);refreshUserList()
+}
+function rechUser(u){
+  var n=7;
+  try{
+    var h=prompt("加时天数(天):","7");
+    if(h===null)return;var p=parseInt(h);
+    if(!isNaN(p)&&p>0)n=p
+  }catch(e){}
+  if(!confirm("确认给用户 "+u+" 加时 "+n+" 天吗？"))return;
+  var us=ls("users")||{};if(!us[u])return;
+  if(us[u].expiresAt)us[u].expiresAt+=n*86400000;
+  else us[u].expiresAt=Date.now()+n*86400000;
+  us[u].status="active";ss("users",us);refreshUserList()
+}
+function delUser(u){
+  if(!confirm("确定要删除用户 "+u+" 吗？"))return;
+  var us=ls("users")||{};delete us[u];ss("users",us);refreshUserList()
+}
+
+/* ===== API 同步（本地服务器持久化） ===== */
+(function(){
+  var isLocal=true;
+  if(!isLocal)return;
+  var _ss=ss;
+  ss=function(k,v){
+    _ss(k,v);
+    fetch(API + "/api/"+k,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(v)}).catch(function(){})
+  };
+  fetch(API + "/api/status").then(function(r){return r.json()}).then(function(d){
+    if(!d.ok)return;
+    fetch(API + "/api/problems").then(function(r){return r.json()}).then(function(p){
+      if(p&&p.length){_ss("problems",p);rp()}
+    }).catch(function(){});
+    fetch(API + "/api/users").then(function(r){return r.json()}).then(function(u){
+      if(u&&Object.keys(u).length>1)_ss("users",u)
+    }).catch(function(){})
+  }).catch(function(){})
+})();
+</script>
+</body>
+</html>
+
