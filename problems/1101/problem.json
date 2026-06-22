@@ -1,0 +1,8 @@
+{
+  "title": "数字和",
+  "description": "读入 n 以及 n 个整数，求这 n 个数字的和。",
+  "inputFormat": "第一行，一个整数 n。",
+  "outputFormat": "第二行，n 个数字",
+  "sampleInput": "3\n1 2 3",
+  "sampleOutput": "6"
+}
