@@ -1,0 +1,8 @@
+{
+  "title": "n个2相乘",
+  "description": "读入一个 n，计算 n 个 2 相乘的结果并输出。",
+  "inputFormat": "一行一个正整数 n。",
+  "outputFormat": "一行一个整数，表示 n 个 2 相乘的结果。",
+  "sampleInput": "3",
+  "sampleOutput": "8"
+}
