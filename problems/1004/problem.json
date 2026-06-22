@@ -1,0 +1,8 @@
+{
+  "title": "约数",
+  "description": "读入一个数 n，请按从小到大的顺序输出它所有的约数。",
+  "inputFormat": "第一行，一个整数 n。",
+  "outputFormat": "输出一行，表示 n 的约数。数字之间用空格隔开。",
+  "sampleInput": "12",
+  "sampleOutput": "1 2 3 4 6 12"
+}
