@@ -1,0 +1,8 @@
+{
+  "title": "考试5",
+  "description": "期末考试要考语文、英语、数学3科，如果三门课都没考到60分，那么蜗蜗就完蛋了。读入蜗蜗三门课的成绩，请输出他有没有完蛋。",
+  "inputFormat": "一行三个整数 chinese,english,math 分别表示蜗蜗的语文、英语、数学成绩。",
+  "outputFormat": "如果蜗蜗三门课都没考到60分，输出 完蛋了，否则输出 没完蛋。",
+  "sampleInput": "60 59 59",
+  "sampleOutput": "没完蛋"
+}
