@@ -1,0 +1,8 @@
+{
+  "title": "输出1到10",
+  "description": "换行从小到大输出1到10。",
+  "inputFormat": "",
+  "outputFormat": "十行，每行一个数字。",
+  "sampleInput": "",
+  "sampleOutput": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10"
+}
