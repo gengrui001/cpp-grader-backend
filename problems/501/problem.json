@@ -1,0 +1,8 @@
+{
+  "title": "大小比较",
+  "description": "给两个整数 a 和 b，判断 a 和 b 的大小关系。\n\n如果 aa 比 bb 小，则输出”a is less than b“。\n如果 aa 比 bb 大，则输出“a is greater than b”。\n如果 aa 和 bb 相等，则输出“a is equal to b”。",
+  "inputFormat": "一行两个整数 a,b。",
+  "outputFormat": "一行，一个字符串，为题目要求的输出。",
+  "sampleInput": "3 5",
+  "sampleOutput": "a is less than b"
+}
