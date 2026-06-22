@@ -1,0 +1,8 @@
+{
+  "title": "加号方阵1",
+  "description": "输入一个数n，输出 100 行加号方阵，每行都是 n 个 + 号。",
+  "inputFormat": "第一行，一个整数 n。",
+  "outputFormat": "100 行，每行 n 个 + 号。",
+  "sampleInput": "",
+  "sampleOutput": ""
+}
