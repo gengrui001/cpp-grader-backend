@@ -1,0 +1,8 @@
+{
+  "title": "数位判断5",
+  "description": "给一个正整数 n，判断 n 的数位里是否包含数字 7。",
+  "inputFormat": "一行，包含一个正整数 n",
+  "outputFormat": "一行，一个字符串。如果n的数位里包含 7，输出 Yes，否则输出 No。",
+  "sampleInput": "1234567",
+  "sampleOutput": "Yes"
+}
