@@ -1,0 +1,8 @@
+{
+  "title": "翻转",
+  "description": "读入一个数 n，请输出把它翻过来以后的值。比如说，把12345翻过来以后是54321。",
+  "inputFormat": "第一行，一个整数 n。",
+  "outputFormat": "输出一行，表示把 n 翻过来以后的值。",
+  "sampleInput": "12345",
+  "sampleOutput": "54321"
+}
