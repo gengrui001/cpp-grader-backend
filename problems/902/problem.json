@@ -1,0 +1,8 @@
+{
+  "title": "不断整除3",
+  "description": "输入 n，让 n 不断地整除 3，直到 n<3 为止，输出最后的结果",
+  "inputFormat": "一行一个正整数 n",
+  "outputFormat": "一行一个整数，表示最后的结果。",
+  "sampleInput": "10",
+  "sampleOutput": "1"
+}
