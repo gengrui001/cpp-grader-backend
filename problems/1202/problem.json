@@ -1,0 +1,8 @@
+{
+  "title": "加号方阵2",
+  "description": "给两个数 a，b，输出 a 行 b 列的加号方阵。",
+  "inputFormat": "第一行，两个空格分隔的整数 a,b",
+  "outputFormat": "a 行，每行 b 个 + 号。",
+  "sampleInput": "3 4",
+  "sampleOutput": "++++\n++++\n++++"
+}
