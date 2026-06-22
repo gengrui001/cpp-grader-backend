@@ -1,0 +1,8 @@
+{
+  "title": "最近的3的倍数是几",
+  "description": "读入一个数 n，请问离它最近的 3 的倍数是几？",
+  "inputFormat": "一行一个整数n。",
+  "outputFormat": "一行一个整数表示离它最近的3的倍数是几。",
+  "sampleInput": "8",
+  "sampleOutput": "9"
+}
